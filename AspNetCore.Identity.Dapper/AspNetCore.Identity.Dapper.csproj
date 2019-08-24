@@ -17,9 +17,16 @@
   <PropertyGroup>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
-    <PackageId>AspNetCore.Identity.Stores.Dapper</PackageId>
+    <PackageId>VeryGood.AspNetCore.Identity.Dapper</PackageId>
     <Authors>Simon Faltum</Authors>
     <Company>Very Good Consulting Company</Company>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Product>VeryGood.AspNetCore.Identity.Dapper</Product>
+    <PackageProjectUrl>https://github.com/simonfaltum/AspNetCore.Identity.Dapper</PackageProjectUrl>
+    <PackageTags>aspnetcore.identity dapper identityserver4 aspnet.identity</PackageTags>
+    <RepositoryUrl>https://github.com/simonfaltum/AspNetCore.Identity.Dapper</RepositoryUrl>
+    <Description>This project provides a Dapper implementation of UserStore and RoleStore, to be used with Microsoft.AspNetCore.Identity.</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>

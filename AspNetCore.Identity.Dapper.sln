@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29209.62
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore.Identity.Dapper", "AspNetCore.Identity.Dapper\AspNetCore.Identity.Dapper.csproj", "{697017DE-EE18-4806-B749-D9BF9895D642}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore.Identity.DatabaseScripts.DbUp", "AspNetCore.Identity.DatabaseScripts.DbUp\AspNetCore.Identity.DatabaseScripts.DbUp.csproj", "{BAD33740-CD8F-423C-8F9B-597EB9052BB3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{697017DE-EE18-4806-B749-D9BF9895D642}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{697017DE-EE18-4806-B749-D9BF9895D642}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{697017DE-EE18-4806-B749-D9BF9895D642}.Debug|x64.ActiveCfg = Debug|x64
+		{697017DE-EE18-4806-B749-D9BF9895D642}.Debug|x64.Build.0 = Debug|x64
+		{697017DE-EE18-4806-B749-D9BF9895D642}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{697017DE-EE18-4806-B749-D9BF9895D642}.Release|Any CPU.Build.0 = Release|Any CPU
+		{697017DE-EE18-4806-B749-D9BF9895D642}.Release|x64.ActiveCfg = Release|x64
+		{697017DE-EE18-4806-B749-D9BF9895D642}.Release|x64.Build.0 = Release|x64
+		{BAD33740-CD8F-423C-8F9B-597EB9052BB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAD33740-CD8F-423C-8F9B-597EB9052BB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAD33740-CD8F-423C-8F9B-597EB9052BB3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BAD33740-CD8F-423C-8F9B-597EB9052BB3}.Debug|x64.Build.0 = Debug|Any CPU
+		{BAD33740-CD8F-423C-8F9B-597EB9052BB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAD33740-CD8F-423C-8F9B-597EB9052BB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAD33740-CD8F-423C-8F9B-597EB9052BB3}.Release|x64.ActiveCfg = Release|Any CPU
+		{BAD33740-CD8F-423C-8F9B-597EB9052BB3}.Release|x64.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9935AA71-64A5-408D-A74C-1DDD0AFEC1B6}
+	EndGlobalSection
+EndGlobal

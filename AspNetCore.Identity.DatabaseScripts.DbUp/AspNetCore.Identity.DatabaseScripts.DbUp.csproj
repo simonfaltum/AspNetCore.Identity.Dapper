@@ -2,6 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <PackageId>VeryGood.AspNetCore.Identity.DatabaseScripts.DbUp</PackageId>
+    <Product>VeryGood.AspNetCore.Identity.DatabaseScripts.DbUp</Product>
+    <Company>Very Good Consulting Company</Company>
+    <Authors>Simon Faltum</Authors>
+    <Description>The library will ensure the Schema exists, and if not create it. Afterwards create the tables needed by AspNetCore.Identity. It is based on DbUp, and for Microsoft SQL Server and Azure SQL Server</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/simonfaltum/AspNetCore.Identity.Dapper</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/simonfaltum/AspNetCore.Identity.Dapper</RepositoryUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
