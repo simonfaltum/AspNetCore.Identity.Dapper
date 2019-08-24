@@ -61,6 +61,13 @@ dotnet add package VeryGood.AspNetCore.Identity.Dapper
 dotnet add package VeryGood.AspNetCore.Identity.DatabaseScripts.DbUp
 ```
 
+Once installed, the library is in the following namespace
+
+```
+using AspNetCore.Identity.Dapper;
+using AspNetCore.Identity.Dapper.Models;
+```
+
 ### Get AspNetCore.Identity.Dapper working
 
 In order to enable the AspNetCore.Identity.Dapper, invoke the middleware following the standard .AddIdentityCore or AddIdentity in ConfigureServices.
