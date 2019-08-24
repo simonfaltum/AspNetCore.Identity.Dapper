@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="DbScripts\20190824083300-CreateAspNetIdentity.sql" />
+    <None Remove="EveryRun\EnsureSchema.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="DbScripts\20190824083300-CreateAspNetIdentity.sql" />
+    <EmbeddedResource Include="EveryRun\EnsureSchema.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="dbup-core" Version="4.2.0" />
+    <PackageReference Include="dbup-sqlserver" Version="4.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+  </ItemGroup>
+
+</Project>
