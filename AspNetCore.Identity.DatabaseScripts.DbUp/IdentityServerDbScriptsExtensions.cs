@@ -1,5 +1,4 @@
-﻿using IdentityServer4.Storage.DatabaseScripts.DbUp;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 

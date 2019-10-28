@@ -19,7 +19,7 @@ namespace AspNetCore.Identity.Dapper.Providers
         }
 
         public async Task<IdentityResult> CreateAsync(ApplicationRole role, CancellationToken cancellationToken) {
-            string command = $"INSERT INTO [{_databaseConnectionFactory.DbSchema}].AspNetRoles " +
+            var command = $"INSERT INTO [{_databaseConnectionFactory.DbSchema}].AspNetRoles " +
                                    "VALUES (@Id, @Name, @NormalizedName, @ConcurrencyStamp);";
 
             int rowsInserted;
@@ -40,55 +40,55 @@ namespace AspNetCore.Identity.Dapper.Providers
         }
 
         public async Task<IdentityResult> UpdateAsync(ApplicationRole role) {
-            string command = $"UPDATE [{_databaseConnectionFactory.DbSchema}].AspNetRoles " +
+            var command = $"UPDATE [{_databaseConnectionFactory.DbSchema}].AspNetRoles " +
                                    "SET Name = @Name, NormalizedName = @NormalizedName, ConcurrencyStamp = @ConcurrencyStamp " +
                                    "WHERE Id = @Id;";
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
-                using (var transaction = sqlConnection.BeginTransaction()) {
-                    await sqlConnection.ExecuteAsync(command, new {
-                        role.Name,
-                        role.NormalizedName,
-                        role.ConcurrencyStamp,
-                        role.Id
+            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync())
+            {
+                using var transaction = sqlConnection.BeginTransaction();
+                await sqlConnection.ExecuteAsync(command, new {
+                    role.Name,
+                    role.NormalizedName,
+                    role.ConcurrencyStamp,
+                    role.Id
+                }, transaction);
+
+                if (role.Claims.Any()) {
+                    const string deleteClaimsCommand = "DELETE " +
+                                                       "FROM dbo.RoleClaims " +
+                                                       "WHERE RoleId = @RoleId;";
+
+                    await sqlConnection.ExecuteAsync(deleteClaimsCommand, new {
+                        RoleId = role.Id
                     }, transaction);
 
-                    if (role.Claims.Count() > 0) {
-                        const string deleteClaimsCommand = "DELETE " +
-                                                           "FROM dbo.RoleClaims " +
-                                                           "WHERE RoleId = @RoleId;";
+                    var insertClaimsCommand = $"INSERT INTO [{_databaseConnectionFactory.DbSchema}].RoleClaims (RoleId, ClaimType, ClaimValue) " +
+                                                 "VALUES (RoleId, ClaimType, ClaimValue);";
 
-                        await sqlConnection.ExecuteAsync(deleteClaimsCommand, new {
-                            RoleId = role.Id
-                        }, transaction);
+                    await sqlConnection.ExecuteAsync(insertClaimsCommand, role.Claims.Select(x => new {
+                        RoleId = role.Id,
+                        ClaimType = x.Type,
+                        ClaimValue = x.Value
+                    }), transaction);
+                }
 
-                        string insertClaimsCommand = $"INSERT INTO [{_databaseConnectionFactory.DbSchema}].RoleClaims (RoleId, ClaimType, ClaimValue) " +
-                                                           "VALUES (RoleId, ClaimType, ClaimValue);";
-
-                        await sqlConnection.ExecuteAsync(insertClaimsCommand, role.Claims.Select(x => new {
-                            RoleId = role.Id,
-                            ClaimType = x.Type,
-                            ClaimValue = x.Value
-                        }), transaction);
-                    }
-
+                try {
+                    transaction.Commit();
+                } catch {
                     try {
-                        transaction.Commit();
+                        transaction.Rollback();
                     } catch {
-                        try {
-                            transaction.Rollback();
-                        } catch {
-                            return IdentityResult.Failed(new IdentityError {
-                                Code = nameof(UpdateAsync),
-                                Description = $"Role with name {role.Name} could not be updated. Operation could not be rolled back."
-                            });
-                        }
-
                         return IdentityResult.Failed(new IdentityError {
                             Code = nameof(UpdateAsync),
-                            Description = $"Role with name {role.Name} could not be updated.. Operation was rolled back."
+                            Description = $"Role with name {role.Name} could not be updated. Operation could not be rolled back."
                         });
                     }
+
+                    return IdentityResult.Failed(new IdentityError {
+                        Code = nameof(UpdateAsync),
+                        Description = $"Role with name {role.Name} could not be updated.. Operation was rolled back."
+                    });
                 }
             }
 
@@ -96,7 +96,7 @@ namespace AspNetCore.Identity.Dapper.Providers
         }
 
         public async Task<IdentityResult> DeleteAsync(ApplicationRole role) {
-            string command = "DELETE " +
+            var command = "DELETE " +
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].AspNetRoles " +
                                    "WHERE Id = @Id;";
 
@@ -113,36 +113,33 @@ namespace AspNetCore.Identity.Dapper.Providers
         }
 
         public async Task<ApplicationRole> FindByIdAsync(Guid roleId) {
-             string command = "SELECT * " +
+             var command = "SELECT * " +
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].AspNetRoles " +
                                    "WHERE Id = @Id;";
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
-                return await sqlConnection.QuerySingleOrDefaultAsync<ApplicationRole>(command, new {
-                    Id = roleId
-                });
-            }
+             using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+             return await sqlConnection.QuerySingleOrDefaultAsync<ApplicationRole>(command, new {
+                 Id = roleId
+             });
         }
 
         public async Task<ApplicationRole> FindByNameAsync(string normalizedRoleName) {
-             string command = "SELECT * " +
+             var command = "SELECT * " +
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].AspNetRoles " +
                                    "WHERE NormalizedName = @NormalizedName;";
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
-                return await sqlConnection.QuerySingleOrDefaultAsync<ApplicationRole>(command, new {
-                    NormalizedName = normalizedRoleName
-                });
-            }
+             using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+             return await sqlConnection.QuerySingleOrDefaultAsync<ApplicationRole>(command, new {
+                 NormalizedName = normalizedRoleName
+             });
         }
 
         public async Task<IEnumerable<ApplicationRole>> GetAllRolesAsync() {
-            string command = "SELECT * " +
+            var command = "SELECT * " +
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].AspNetRoles;";
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
-                return await sqlConnection.QueryAsync<ApplicationRole>(command);
-            }
+            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            return await sqlConnection.QueryAsync<ApplicationRole>(command);
         }
     }
 }

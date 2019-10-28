@@ -1,6 +1,5 @@
 ﻿using DbUp;
 using DbUp.Helpers;
-using IdentityServer4.Storage.DatabaseScripts.DbUp;
 using System;
 using System.Collections.Generic;
 using System.Reflection;

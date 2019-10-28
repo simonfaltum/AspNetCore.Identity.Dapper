@@ -19,7 +19,7 @@ namespace AspNetCore.Identity.Dapper.Providers
         }
 
         public async Task<IdentityResult> CreateAsync(ApplicationUser user) {
-            string command = $"INSERT INTO [{_databaseConnectionFactory.DbSchema}].[AspNetUsers] " +
+            var command = $"INSERT INTO [{_databaseConnectionFactory.DbSchema}].[AspNetUsers] " +
                                    "VALUES (@Id, @UserName, @NormalizedUserName, @Email, @NormalizedEmail, @EmailConfirmed, @PasswordHash, @SecurityStamp, @ConcurrencyStamp, " +
                                            "@PhoneNumber, @PhoneNumberConfirmed, @TwoFactorEnabled, @LockoutEnd, @LockoutEnabled, @AccessFailedCount, @UserType, @IsActive);";
 
@@ -54,7 +54,7 @@ namespace AspNetCore.Identity.Dapper.Providers
         }
 
         public async Task<IdentityResult> DeleteAsync(ApplicationUser user) {
-            string command = "DELETE " +
+            var command = "DELETE " +
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUsers] " +
                                    "WHERE Id = @Id;";
 
@@ -73,39 +73,36 @@ namespace AspNetCore.Identity.Dapper.Providers
         }
 
         public async Task<ApplicationUser> FindByIdAsync(Guid userId) {
-            string command = "SELECT * " +
+            var command = "SELECT * " +
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUsers] " +
                                    "WHERE Id = @Id;";
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
-                return await sqlConnection.QuerySingleOrDefaultAsync<ApplicationUser>(command, new {
-                    Id = userId
-                });
-            }
+            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            return await sqlConnection.QuerySingleOrDefaultAsync<ApplicationUser>(command, new {
+                Id = userId
+            });
         }
 
         public async Task<ApplicationUser> FindByNameAsync(string normalizedUserName) {
-            string command = "SELECT * " +
+            var command = "SELECT * " +
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUsers] " +
                                    "WHERE NormalizedUserName = @NormalizedUserName;";
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
-                return await sqlConnection.QuerySingleOrDefaultAsync<ApplicationUser>(command, new {
-                    NormalizedUserName = normalizedUserName
-                });
-            }
+            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            return await sqlConnection.QuerySingleOrDefaultAsync<ApplicationUser>(command, new {
+                NormalizedUserName = normalizedUserName
+            });
         }
 
         public async Task<ApplicationUser> FindByEmailAsync(string normalizedEmail) {
-            string command = "SELECT * " +
+            var command = "SELECT * " +
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUsers] " +
                                    "WHERE NormalizedEmail = @NormalizedEmail;";
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
-                return await sqlConnection.QuerySingleOrDefaultAsync<ApplicationUser>(command, new {
-                    NormalizedEmail = normalizedEmail
-                });
-            }
+            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            return await sqlConnection.QuerySingleOrDefaultAsync<ApplicationUser>(command, new {
+                NormalizedEmail = normalizedEmail
+            });
         }
 
         public async Task<IdentityResult> UpdateAsync(ApplicationUser user) {
@@ -113,7 +110,7 @@ namespace AspNetCore.Identity.Dapper.Providers
             // ASP.NET Core Identity stores follow a UOW (Unit of Work) pattern which practically means that when an operation is called it does not necessarily commits to the database.
             // It tracks the changes made and finally commits to the database. UserStore methods just manipulates the user and only CreateAsync, UpdateAsync and DeleteAsync of IUserStore<>
             // write to the database. This makes sense because this way we avoid connection to the database all the time and also we can commit all changes at once by using a transaction.
-             string updateUserCommand =
+             var updateUserCommand =
                 $"UPDATE [{_databaseConnectionFactory.DbSchema}].[AspNetUsers] " +
                 "SET UserName = @UserName, NormalizedUserName = @NormalizedUserName, Email = @Email, NormalizedEmail = @NormalizedEmail, EmailConfirmed = @EmailConfirmed, " +
                     "PasswordHash = @PasswordHash, SecurityStamp = @SecurityStamp, ConcurrencyStamp = @ConcurrencyStamp, PhoneNumber = @PhoneNumber, " +
@@ -121,122 +118,122 @@ namespace AspNetCore.Identity.Dapper.Providers
                     "AccessFailedCount = @AccessFailedCount, UserType = @UserType, IsActive = @IsActive " +
                 "WHERE Id = @Id;";
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
-                using (var transaction = sqlConnection.BeginTransaction()) {
-                    await sqlConnection.ExecuteAsync(updateUserCommand, new {
-                        user.UserName,
-                        user.NormalizedUserName,
-                        user.Email,
-                        user.NormalizedEmail,
-                        user.EmailConfirmed,
-                        user.PasswordHash,
-                        user.SecurityStamp,
-                        user.ConcurrencyStamp,
-                        user.PhoneNumber,
-                        user.PhoneNumberConfirmed,
-                        user.TwoFactorEnabled,
-                        user.LockoutEnd,
-                        user.LockoutEnabled,
-                        user.AccessFailedCount,
-                        user.Id,
-                        user.UserType,
-                        user.IsActive
+            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync())
+            {
+                using var transaction = sqlConnection.BeginTransaction();
+                await sqlConnection.ExecuteAsync(updateUserCommand, new {
+                    user.UserName,
+                    user.NormalizedUserName,
+                    user.Email,
+                    user.NormalizedEmail,
+                    user.EmailConfirmed,
+                    user.PasswordHash,
+                    user.SecurityStamp,
+                    user.ConcurrencyStamp,
+                    user.PhoneNumber,
+                    user.PhoneNumberConfirmed,
+                    user.TwoFactorEnabled,
+                    user.LockoutEnd,
+                    user.LockoutEnabled,
+                    user.AccessFailedCount,
+                    user.Id,
+                    user.UserType,
+                    user.IsActive
+                }, transaction);
+
+                if (user.Claims?.Count() > 0) {
+                    var deleteClaimsCommand = "DELETE " +
+                                                 $"FROM [{_databaseConnectionFactory.DbSchema}].UserClaims " +
+                                                 "WHERE UserId = @UserId;";
+
+                    await sqlConnection.ExecuteAsync(deleteClaimsCommand, new {
+                        UserId = user.Id
                     }, transaction);
 
-                    if (user.Claims?.Count() > 0) {
-                        string deleteClaimsCommand = "DELETE " +
-                                                           $"FROM [{_databaseConnectionFactory.DbSchema}].UserClaims " +
-                                                           "WHERE UserId = @UserId;";
+                    var insertClaimsCommand = $"INSERT INTO [{_databaseConnectionFactory.DbSchema}].UserClaims (UserId, ClaimType, ClaimValue) " +
+                                                 "VALUES (@UserId, @ClaimType, @ClaimValue);";
 
-                        await sqlConnection.ExecuteAsync(deleteClaimsCommand, new {
-                            UserId = user.Id
-                        }, transaction);
+                    await sqlConnection.ExecuteAsync(insertClaimsCommand, user.Claims.Select(x => new {
+                        UserId = user.Id,
+                        ClaimType = x.Type,
+                        ClaimValue = x.Value
+                    }), transaction);
+                }
 
-                        string insertClaimsCommand = $"INSERT INTO [{_databaseConnectionFactory.DbSchema}].UserClaims (UserId, ClaimType, ClaimValue) " +
-                                                           "VALUES (@UserId, @ClaimType, @ClaimValue);";
+                if (user.Logins?.Count() > 0) {
+                    var deleteLoginsCommand = "DELETE " +
+                                                 $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUserLogins] " +
+                                                 "WHERE UserId = @UserId;";
 
-                        await sqlConnection.ExecuteAsync(insertClaimsCommand, user.Claims.Select(x => new {
-                            UserId = user.Id,
-                            ClaimType = x.Type,
-                            ClaimValue = x.Value
-                        }), transaction);
-                    }
+                    await sqlConnection.ExecuteAsync(deleteLoginsCommand, new {
+                        UserId = user.Id
+                    }, transaction);
 
-                    if (user.Logins?.Count() > 0) {
-                        string deleteLoginsCommand = "DELETE " +
-                                                           $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUserLogins] " +
-                                                           "WHERE UserId = @UserId;";
+                    var insertLoginsCommand = $"INSERT INTO [{_databaseConnectionFactory.DbSchema}].[AspNetUserLogins] (LoginProvider, ProviderKey, ProviderDisplayName, UserId) " +
+                                                 "VALUES (@LoginProvider, @ProviderKey, @ProviderDisplayName, @UserId);";
 
-                        await sqlConnection.ExecuteAsync(deleteLoginsCommand, new {
-                            UserId = user.Id
-                        }, transaction);
+                    await sqlConnection.ExecuteAsync(insertLoginsCommand, user.Logins.Select(x => new {
+                        x.LoginProvider,
+                        x.ProviderKey,
+                        x.ProviderDisplayName,
+                        UserId = user.Id
+                    }), transaction);
+                }
 
-                        string insertLoginsCommand = $"INSERT INTO [{_databaseConnectionFactory.DbSchema}].[AspNetUserLogins] (LoginProvider, ProviderKey, ProviderDisplayName, UserId) " +
-                                                           "VALUES (@LoginProvider, @ProviderKey, @ProviderDisplayName, @UserId);";
+                if (user.Roles?.Count() > 0) {
+                    var deleteRolesCommand = "DELETE " +
+                                                $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUserRoles] " +
+                                                "WHERE UserId = @UserId;";
 
-                        await sqlConnection.ExecuteAsync(insertLoginsCommand, user.Logins.Select(x => new {
-                            x.LoginProvider,
-                            x.ProviderKey,
-                            x.ProviderDisplayName,
-                            UserId = user.Id
-                        }), transaction);
-                    }
+                    await sqlConnection.ExecuteAsync(deleteRolesCommand, new {
+                        UserId = user.Id
+                    }, transaction);
 
-                    if (user.Roles?.Count() > 0) {
-                        string deleteRolesCommand = "DELETE " +
-                                                          $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUserRoles] " +
-                                                          "WHERE UserId = @UserId;";
+                    var insertRolesCommand = $"INSERT INTO [{_databaseConnectionFactory.DbSchema}].[AspNetUserRoles] (UserId, RoleId) " +
+                                                "VALUES (@UserId, @RoleId);";
 
-                        await sqlConnection.ExecuteAsync(deleteRolesCommand, new {
-                            UserId = user.Id
-                        }, transaction);
+                    await sqlConnection.ExecuteAsync(insertRolesCommand, user.Roles.Select(x => new {
+                        UserId = user.Id,
+                        x.RoleId
+                    }), transaction);
+                }
 
-                        string insertRolesCommand = $"INSERT INTO [{_databaseConnectionFactory.DbSchema}].[AspNetUserRoles] (UserId, RoleId) " +
-                                                          "VALUES (@UserId, @RoleId);";
+                if (user.Tokens?.Count() > 0) {
+                    var deleteTokensCommand = "DELETE " +
+                                                 $"FROM [{_databaseConnectionFactory.DbSchema}].UserTokens " +
+                                                 "WHERE UserId = @UserId;";
 
-                        await sqlConnection.ExecuteAsync(insertRolesCommand, user.Roles.Select(x => new {
-                            UserId = user.Id,
-                            x.RoleId
-                        }), transaction);
-                    }
+                    await sqlConnection.ExecuteAsync(deleteTokensCommand, new {
+                        UserId = user.Id
+                    }, transaction);
 
-                    if (user.Tokens?.Count() > 0) {
-                        string deleteTokensCommand = "DELETE " +
-                                                           $"FROM [{_databaseConnectionFactory.DbSchema}].UserTokens " +
-                                                           "WHERE UserId = @UserId;";
+                    var insertTokensCommand = $"INSERT INTO [{_databaseConnectionFactory.DbSchema}].UserTokens (UserId, LoginProvider, Name, Value) " +
+                                                 "VALUES (@UserId, @LoginProvider, @Name, @Value);";
 
-                        await sqlConnection.ExecuteAsync(deleteTokensCommand, new {
-                            UserId = user.Id
-                        }, transaction);
+                    await sqlConnection.ExecuteAsync(insertTokensCommand, user.Tokens.Select(x => new {
+                        x.UserId,
+                        x.LoginProvider,
+                        x.Name,
+                        x.Value
+                    }), transaction);
+                }
 
-                         string insertTokensCommand = $"INSERT INTO [{_databaseConnectionFactory.DbSchema}].UserTokens (UserId, LoginProvider, Name, Value) " +
-                                                           "VALUES (@UserId, @LoginProvider, @Name, @Value);";
-
-                        await sqlConnection.ExecuteAsync(insertTokensCommand, user.Tokens.Select(x => new {
-                            x.UserId,
-                            x.LoginProvider,
-                            x.Name,
-                            x.Value
-                        }), transaction);
-                    }
-
+                try {
+                    transaction.Commit();
+                } catch {
                     try {
-                        transaction.Commit();
+                        transaction.Rollback();
                     } catch {
-                        try {
-                            transaction.Rollback();
-                        } catch {
-                            return IdentityResult.Failed(new IdentityError {
-                                Code = nameof(UpdateAsync),
-                                Description = $"User with email {user.Email} could not be updated. Operation could not be rolled back."
-                            });
-                        }
-
                         return IdentityResult.Failed(new IdentityError {
                             Code = nameof(UpdateAsync),
-                            Description = $"User with email {user.Email} could not be updated. Operation was rolled back."
+                            Description = $"User with email {user.Email} could not be updated. Operation could not be rolled back."
                         });
                     }
+
+                    return IdentityResult.Failed(new IdentityError {
+                        Code = nameof(UpdateAsync),
+                        Description = $"User with email {user.Email} could not be updated. Operation was rolled back."
+                    });
                 }
             }
 
@@ -244,40 +241,37 @@ namespace AspNetCore.Identity.Dapper.Providers
         }
 
         public async Task<IList<ApplicationUser>> GetUsersInRoleAsync(string roleName) {
-            string command = "SELECT * " +
+            var command = "SELECT * " +
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUsers] AS u " +
                                    $"INNER JOIN [{_databaseConnectionFactory.DbSchema}].[AspNetUserRoles] AS ur ON u.Id = ur.UserId " +
                                    $"INNER JOIN [{_databaseConnectionFactory.DbSchema}].AspNetRoles AS r ON ur.RoleId = r.Id " +
                                    "WHERE r.Name = @RoleName;";
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
-                return (await sqlConnection.QueryAsync<ApplicationUser>(command, new {
-                    RoleName = roleName
-                })).ToList();
-            }
+            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            return (await sqlConnection.QueryAsync<ApplicationUser>(command, new {
+                RoleName = roleName
+            })).ToList();
         }
 
         public async Task<IList<ApplicationUser>> GetUsersForClaimAsync(Claim claim) {
-            string command = "SELECT * " +
+            var command = "SELECT * " +
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUsers] AS u " +
                                    $"INNER JOIN [{_databaseConnectionFactory.DbSchema}].UserClaims AS uc ON u.Id = uc.UserId " +
                                    "WHERE uc.ClaimType = @ClaimType AND uc.ClaimValue = @ClaimValue;";
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
-                return (await sqlConnection.QueryAsync<ApplicationUser>(command, new {
-                    ClaimType = claim.Type,
-                    ClaimValue = claim.Value
-                })).ToList();
-            }
+            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            return (await sqlConnection.QueryAsync<ApplicationUser>(command, new {
+                ClaimType = claim.Type,
+                ClaimValue = claim.Value
+            })).ToList();
         }
 
         public async Task<IEnumerable<ApplicationUser>> GetAllUsers() {
-            string command = "SELECT * " +
+            var command = "SELECT * " +
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUsers];";
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
-                return await sqlConnection.QueryAsync<ApplicationUser>(command);
-            }
+            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            return await sqlConnection.QueryAsync<ApplicationUser>(command);
         }
     }
 }

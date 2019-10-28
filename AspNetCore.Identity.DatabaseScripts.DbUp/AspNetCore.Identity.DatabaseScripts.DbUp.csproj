@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <PackageId>VeryGood.AspNetCore.Identity.DatabaseScripts.DbUp</PackageId>
     <Product>VeryGood.AspNetCore.Identity.DatabaseScripts.DbUp</Product>
     <Company>Very Good Consulting Company</Company>
@@ -11,6 +11,7 @@
     <PackageProjectUrl>https://github.com/simonfaltum/AspNetCore.Identity.Dapper</PackageProjectUrl>
     <RepositoryUrl>https://github.com/simonfaltum/AspNetCore.Identity.Dapper</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>3.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,7 +27,7 @@
   <ItemGroup>
     <PackageReference Include="dbup-core" Version="4.2.0" />
     <PackageReference Include="dbup-sqlserver" Version="4.2.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0" />
   </ItemGroup>
 
 </Project>

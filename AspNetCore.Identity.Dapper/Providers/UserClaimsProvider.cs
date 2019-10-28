@@ -18,17 +18,16 @@ namespace AspNetCore.Identity.Dapper.Providers
         }
 
         public async Task<IList<Claim>> GetClaimsAsync(ApplicationUser user) {
-             string command = "SELECT * " +
+             var command = "SELECT * " +
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUserClaims] " +
                                    "WHERE UserId = @UserId;";
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
-                return (
-                    await sqlConnection.QueryAsync<UserClaim>(command, new { UserId = user.Id })
-                )
-                .Select(e => new Claim(e.ClaimType, e.ClaimValue))
-                .ToList(); ;
-            }
+             using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+             return (
+                     await sqlConnection.QueryAsync<UserClaim>(command, new { UserId = user.Id })
+                 )
+                 .Select(e => new Claim(e.ClaimType, e.ClaimValue))
+                 .ToList(); ;
         }
     }
 }

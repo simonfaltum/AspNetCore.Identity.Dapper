@@ -2,17 +2,16 @@
   <PropertyGroup>
     <AssemblyName>AspNetCore.Identity.Dapper</AssemblyName>
     <AssemblyTitle>AspNetCore.Identity.Dapper</AssemblyTitle>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
-
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <VersionPrefix>2.2.0</VersionPrefix>
     <Platforms>AnyCPU;x64</Platforms>
     
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.30" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="2.2.0" />
-    <PackageReference Include="Dapper" Version="1.60.6" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="3.0.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.7.0" />
   </ItemGroup>
   <PropertyGroup>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
@@ -26,7 +25,8 @@
     <PackageTags>aspnetcore.identity dapper identityserver4 aspnet.identity</PackageTags>
     <RepositoryUrl>https://github.com/simonfaltum/AspNetCore.Identity.Dapper</RepositoryUrl>
     <Description>This project provides a Dapper implementation of UserStore and RoleStore, to be used with Microsoft.AspNetCore.Identity.</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Version>3.0.0</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>

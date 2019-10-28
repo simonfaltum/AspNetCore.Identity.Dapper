@@ -16,16 +16,15 @@ namespace AspNetCore.Identity.Dapper.Providers
         }
 
         public async Task<IEnumerable<UserRole>> GetRolesAsync(ApplicationUser user) {
-            string command = "SELECT r.Id AS RoleId, r.Name AS RoleName " +
+            var command = "SELECT r.Id AS RoleId, r.Name AS RoleName " +
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].AspNetRoles AS r " +
                                    $"INNER JOIN [{_databaseConnectionFactory.DbSchema}].[AspNetUserRoles] AS ur ON ur.RoleId = r.Id " +
                                    "WHERE ur.UserId = @UserId;";
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
-                return await sqlConnection.QueryAsync<UserRole>(command, new {
-                    UserId = user.Id
-                });
-            }
+            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            return await sqlConnection.QueryAsync<UserRole>(command, new {
+                UserId = user.Id
+            });
         }
     }
 }

@@ -15,15 +15,14 @@ namespace AspNetCore.Identity.Dapper.Providers
         }
 
         public async Task<IEnumerable<UserToken>> GetTokensAsync(string userId) {
-            string command = "SELECT * " +
+            var command = "SELECT * " +
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUserTokens] " +
                                    "WHERE UserId = @UserId;";
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
-                return await sqlConnection.QueryAsync<UserToken>(command, new {
-                    UserId = userId
-                });
-            }
+            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            return await sqlConnection.QueryAsync<UserToken>(command, new {
+                UserId = userId
+            });
         }
     }
 }
