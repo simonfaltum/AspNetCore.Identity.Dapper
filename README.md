@@ -38,7 +38,7 @@ More documentation on AspNetCore.Identity can be found here:
 If you are just beginning out with IdentityServer4, it is important to note that this library will help you with persistence of the IdentityServer4 settings (such as which Clients to authorize, which ApiResources and such) but anything related to **Users** is not handled in this library. 
 
 Both libraries are made to let the developer customize ConnectionString and DatabaseSchema.
-It is built for Dotnet Core (latest version as of august 2019: 2.2.6), with DependencyInjection, making customization easy.
+It is built for Dotnet Core (latest version as of december 2019: 3.1.0), with DependencyInjection, making customization easy.
 
 
 ## Getting Started
