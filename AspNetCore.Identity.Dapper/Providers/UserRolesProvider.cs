@@ -21,7 +21,7 @@ namespace AspNetCore.Identity.Dapper.Providers
                                    $"INNER JOIN [{_databaseConnectionFactory.DbSchema}].[AspNetUserRoles] AS ur ON ur.RoleId = r.Id " +
                                    "WHERE ur.UserId = @UserId;";
 
-            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            await using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
             return await sqlConnection.QueryAsync<UserRole>(command, new {
                 UserId = user.Id
             });

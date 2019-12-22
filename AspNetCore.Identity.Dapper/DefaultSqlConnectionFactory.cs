@@ -1,6 +1,4 @@
-﻿using System;
-using System.Data;
-using System.Data.SqlClient;
+﻿using System.Data.SqlClient;
 using System.Threading.Tasks;
 
 namespace AspNetCore.Identity.Dapper
@@ -15,7 +13,7 @@ namespace AspNetCore.Identity.Dapper
             DbSchema = schema;
         }
 
-        public async Task<IDbConnection> CreateConnectionAsync() {
+        public async Task<SqlConnection> CreateConnectionAsync() {
             try {
                 var sqlConnection = new SqlConnection(_connectionString);
                 await sqlConnection.OpenAsync();

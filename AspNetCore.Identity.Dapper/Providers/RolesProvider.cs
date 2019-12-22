@@ -24,7 +24,7 @@ namespace AspNetCore.Identity.Dapper.Providers
 
             int rowsInserted;
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
+            await using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
                 rowsInserted = await sqlConnection.ExecuteAsync(command, new {
                     role.Id,
                     role.Name,
@@ -44,9 +44,9 @@ namespace AspNetCore.Identity.Dapper.Providers
                                    "SET Name = @Name, NormalizedName = @NormalizedName, ConcurrencyStamp = @ConcurrencyStamp " +
                                    "WHERE Id = @Id;";
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync())
+            await using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync())
             {
-                using var transaction = sqlConnection.BeginTransaction();
+                await using var transaction = await sqlConnection.BeginTransactionAsync();
                 await sqlConnection.ExecuteAsync(command, new {
                     role.Name,
                     role.NormalizedName,
@@ -74,10 +74,10 @@ namespace AspNetCore.Identity.Dapper.Providers
                 }
 
                 try {
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 } catch {
                     try {
-                        transaction.Rollback();
+                        await transaction.RollbackAsync();
                     } catch {
                         return IdentityResult.Failed(new IdentityError {
                             Code = nameof(UpdateAsync),
@@ -102,7 +102,7 @@ namespace AspNetCore.Identity.Dapper.Providers
 
             int rowsDeleted;
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
+            await using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
                 rowsDeleted = await sqlConnection.ExecuteAsync(command, new { role.Id });
             }
 
@@ -117,7 +117,7 @@ namespace AspNetCore.Identity.Dapper.Providers
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].AspNetRoles " +
                                    "WHERE Id = @Id;";
 
-             using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+             await using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
              return await sqlConnection.QuerySingleOrDefaultAsync<ApplicationRole>(command, new {
                  Id = roleId
              });
@@ -128,7 +128,7 @@ namespace AspNetCore.Identity.Dapper.Providers
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].AspNetRoles " +
                                    "WHERE NormalizedName = @NormalizedName;";
 
-             using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+             await using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
              return await sqlConnection.QuerySingleOrDefaultAsync<ApplicationRole>(command, new {
                  NormalizedName = normalizedRoleName
              });
@@ -138,7 +138,7 @@ namespace AspNetCore.Identity.Dapper.Providers
             var command = "SELECT * " +
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].AspNetRoles;";
 
-            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            await using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
             return await sqlConnection.QueryAsync<ApplicationRole>(command);
         }
     }

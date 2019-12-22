@@ -23,7 +23,7 @@ namespace AspNetCore.Identity.Dapper.Providers
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUserLogins] " +
                                    "WHERE UserId = @UserId;";
 
-            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            await using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
             return (
                     await sqlConnection.QueryAsync<UserLogin>(command, new { UserId = user.Id })
                 )
@@ -39,7 +39,7 @@ namespace AspNetCore.Identity.Dapper.Providers
                 "WHERE LoginProvider = @LoginProvider AND ProviderKey = @ProviderKey;"
             };
 
-            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            await using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
             var userId = await sqlConnection.QuerySingleOrDefaultAsync<Guid?>(command[0], new {
                 LoginProvider = loginProvider,
                 ProviderKey = providerKey

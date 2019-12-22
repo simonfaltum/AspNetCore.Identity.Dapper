@@ -25,7 +25,7 @@ namespace AspNetCore.Identity.Dapper.Providers
 
             int rowsInserted;
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
+            await using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
                 rowsInserted = await sqlConnection.ExecuteAsync(command, new {
                     user.Id,
                     user.UserName,
@@ -60,7 +60,7 @@ namespace AspNetCore.Identity.Dapper.Providers
 
             int rowsDeleted;
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
+            await using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync()) {
                 rowsDeleted = await sqlConnection.ExecuteAsync(command, new {
                     user.Id
                 });
@@ -77,7 +77,7 @@ namespace AspNetCore.Identity.Dapper.Providers
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUsers] " +
                                    "WHERE Id = @Id;";
 
-            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            await using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
             return await sqlConnection.QuerySingleOrDefaultAsync<ApplicationUser>(command, new {
                 Id = userId
             });
@@ -88,7 +88,7 @@ namespace AspNetCore.Identity.Dapper.Providers
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUsers] " +
                                    "WHERE NormalizedUserName = @NormalizedUserName;";
 
-            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            await using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
             return await sqlConnection.QuerySingleOrDefaultAsync<ApplicationUser>(command, new {
                 NormalizedUserName = normalizedUserName
             });
@@ -99,7 +99,7 @@ namespace AspNetCore.Identity.Dapper.Providers
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUsers] " +
                                    "WHERE NormalizedEmail = @NormalizedEmail;";
 
-            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            await using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
             return await sqlConnection.QuerySingleOrDefaultAsync<ApplicationUser>(command, new {
                 NormalizedEmail = normalizedEmail
             });
@@ -118,9 +118,9 @@ namespace AspNetCore.Identity.Dapper.Providers
                     "AccessFailedCount = @AccessFailedCount, UserType = @UserType, IsActive = @IsActive " +
                 "WHERE Id = @Id;";
 
-            using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync())
+             await using (var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync())
             {
-                using var transaction = sqlConnection.BeginTransaction();
+                await using var transaction = await sqlConnection.BeginTransactionAsync();
                 await sqlConnection.ExecuteAsync(updateUserCommand, new {
                     user.UserName,
                     user.NormalizedUserName,
@@ -219,10 +219,10 @@ namespace AspNetCore.Identity.Dapper.Providers
                 }
 
                 try {
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 } catch {
                     try {
-                        transaction.Rollback();
+                        await transaction.RollbackAsync();
                     } catch {
                         return IdentityResult.Failed(new IdentityError {
                             Code = nameof(UpdateAsync),
@@ -247,7 +247,7 @@ namespace AspNetCore.Identity.Dapper.Providers
                                    $"INNER JOIN [{_databaseConnectionFactory.DbSchema}].AspNetRoles AS r ON ur.RoleId = r.Id " +
                                    "WHERE r.Name = @RoleName;";
 
-            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            await using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
             return (await sqlConnection.QueryAsync<ApplicationUser>(command, new {
                 RoleName = roleName
             })).ToList();
@@ -259,7 +259,7 @@ namespace AspNetCore.Identity.Dapper.Providers
                                    $"INNER JOIN [{_databaseConnectionFactory.DbSchema}].UserClaims AS uc ON u.Id = uc.UserId " +
                                    "WHERE uc.ClaimType = @ClaimType AND uc.ClaimValue = @ClaimValue;";
 
-            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            await using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
             return (await sqlConnection.QueryAsync<ApplicationUser>(command, new {
                 ClaimType = claim.Type,
                 ClaimValue = claim.Value
@@ -270,7 +270,7 @@ namespace AspNetCore.Identity.Dapper.Providers
             var command = "SELECT * " +
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUsers];";
 
-            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            await using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
             return await sqlConnection.QueryAsync<ApplicationUser>(command);
         }
     }

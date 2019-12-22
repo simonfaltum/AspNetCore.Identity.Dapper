@@ -1,11 +1,11 @@
-﻿using System.Data;
+﻿using System.Data.SqlClient;
 using System.Threading.Tasks;
 
 namespace AspNetCore.Identity.Dapper
 {
     public interface IDatabaseConnectionFactory
     {
-        Task<IDbConnection> CreateConnectionAsync();
+        Task<SqlConnection> CreateConnectionAsync();
         string DbSchema { get; set; }
     }
 }

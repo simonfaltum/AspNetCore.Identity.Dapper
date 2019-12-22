@@ -24,7 +24,7 @@ namespace AspNetCore.Identity.Dapper.Providers
 
             IEnumerable<RoleClaim> roleClaims = new List<RoleClaim>();
 
-            using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+            await using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
             return (
                     await sqlConnection.QueryAsync<RoleClaim>(command, new { RoleId = roleId })
                 )

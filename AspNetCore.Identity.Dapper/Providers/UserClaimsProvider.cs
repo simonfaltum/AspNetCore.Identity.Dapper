@@ -22,7 +22,7 @@ namespace AspNetCore.Identity.Dapper.Providers
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUserClaims] " +
                                    "WHERE UserId = @UserId;";
 
-             using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
+             await using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
              return (
                      await sqlConnection.QueryAsync<UserClaim>(command, new { UserId = user.Id })
                  )
