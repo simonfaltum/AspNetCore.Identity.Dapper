@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using System;
 
 namespace AspNetCore.Identity.DatabaseScripts.DbUp
 {
@@ -9,8 +9,6 @@ namespace AspNetCore.Identity.DatabaseScripts.DbUp
     /// </summary>
     public static class IdentityServerDbScriptsExtensions
     {
-
-
         public static IServiceCollection AddIdentityDbUpDatabaseScripts(this IServiceCollection services, Action<DBProviderOptions> dbProviderOptionsAction = null)
         {
             var options = GetDefaultOptions();
@@ -25,8 +23,5 @@ namespace AspNetCore.Identity.DatabaseScripts.DbUp
             var options = new DBProviderOptions();
             return options;
         }
-
-
-
     }
 }

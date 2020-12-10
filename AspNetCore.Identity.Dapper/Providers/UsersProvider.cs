@@ -141,7 +141,7 @@ namespace AspNetCore.Identity.Dapper.Providers
                     user.IsActive
                 }, transaction);
 
-                if (user.Claims?.Count() > 0) {
+                if (user.Claims?.Count > 0) {
                     var deleteClaimsCommand = "DELETE " +
                                                  $"FROM [{_databaseConnectionFactory.DbSchema}].UserClaims " +
                                                  "WHERE UserId = @UserId;";
@@ -160,7 +160,7 @@ namespace AspNetCore.Identity.Dapper.Providers
                     }), transaction);
                 }
 
-                if (user.Logins?.Count() > 0) {
+                if (user.Logins?.Count > 0) {
                     var deleteLoginsCommand = "DELETE " +
                                                  $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUserLogins] " +
                                                  "WHERE UserId = @UserId;";
@@ -180,7 +180,7 @@ namespace AspNetCore.Identity.Dapper.Providers
                     }), transaction);
                 }
 
-                if (user.Roles?.Count() > 0) {
+                if (user.Roles?.Count > 0) {
                     var deleteRolesCommand = "DELETE " +
                                                 $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUserRoles] " +
                                                 "WHERE UserId = @UserId;";
@@ -198,7 +198,7 @@ namespace AspNetCore.Identity.Dapper.Providers
                     }), transaction);
                 }
 
-                if (user.Tokens?.Count() > 0) {
+                if (user.Tokens?.Count > 0) {
                     var deleteTokensCommand = "DELETE " +
                                                  $"FROM [{_databaseConnectionFactory.DbSchema}].UserTokens " +
                                                  "WHERE UserId = @UserId;";

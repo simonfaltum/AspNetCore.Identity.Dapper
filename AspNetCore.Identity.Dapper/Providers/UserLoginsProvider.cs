@@ -28,7 +28,7 @@ namespace AspNetCore.Identity.Dapper.Providers
                     await sqlConnection.QueryAsync<UserLogin>(command, new { UserId = user.Id })
                 )
                 .Select(x => new UserLoginInfo(x.LoginProvider, x.ProviderKey, x.ProviderDisplayName))
-                .ToList(); ;
+                .ToList();
         }
 
         public async Task<ApplicationUser> FindByLoginAsync(string loginProvider, string providerKey) {

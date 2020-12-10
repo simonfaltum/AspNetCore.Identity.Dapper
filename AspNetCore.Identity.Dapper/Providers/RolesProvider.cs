@@ -54,7 +54,7 @@ namespace AspNetCore.Identity.Dapper.Providers
                     role.Id
                 }, transaction);
 
-                if (role.Claims.Any()) {
+                if (role.Claims.Count > 0) {
                     const string deleteClaimsCommand = "DELETE " +
                                                        "FROM dbo.RoleClaims " +
                                                        "WHERE RoleId = @RoleId;";

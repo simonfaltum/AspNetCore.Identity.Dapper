@@ -26,7 +26,7 @@ namespace AspNetCore.Identity.Dapper
             var options = GetDefaultOptions();
             dbProviderOptionsAction?.Invoke(options);
             builder.Services.AddSingleton(options);
-            builder.Services.AddTransient<IDatabaseConnectionFactory>(service => new DefaultSqlConnectionFactory(options.ConnectionString, options.DbSchema));
+            builder.Services.AddScoped<IDatabaseConnectionFactory>(service => new DefaultSqlConnectionFactory(options.ConnectionString, options.DbSchema));
 
             return builder;
         }
@@ -49,7 +49,6 @@ namespace AspNetCore.Identity.Dapper
         public static DBProviderOptions GetDefaultOptions()
         {
             return new DBProviderOptions();
-         
         }
     }
 }

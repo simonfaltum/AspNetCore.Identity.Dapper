@@ -48,7 +48,7 @@ namespace AspNetCore.Identity.Dapper.Stores
         public Task<string> GetRoleIdAsync(ApplicationRole role, CancellationToken cancellationToken) {
             cancellationToken.ThrowIfCancellationRequested();
             role.ThrowIfNull(nameof(role));
-            return Task.FromResult(role.Id.ToString());
+            return Task.FromResult(role.Id);
         }
 
         public Task<string> GetRoleNameAsync(ApplicationRole role, CancellationToken cancellationToken) {
@@ -97,18 +97,18 @@ namespace AspNetCore.Identity.Dapper.Stores
             return _rolesTable.FindByNameAsync(normalizedRoleName);
         }
 
-        public void Dispose() { /* Nothing to dispose. */ }
+    
         #endregion
 
         #region IRoleClaimStore<ApplicationRole> Implementation
-        public async Task<IList<Claim>> GetClaimsAsync(ApplicationRole role, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task<IList<Claim>> GetClaimsAsync(ApplicationRole role, CancellationToken cancellationToken = default) {
             cancellationToken.ThrowIfCancellationRequested();
             role.ThrowIfNull(nameof(role));
             role.Claims = role.Claims ?? (await _roleClaimsTable.GetClaimsAsync(role.Id)).ToList();
             return role.Claims;
         }
 
-        public async Task AddClaimAsync(ApplicationRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task AddClaimAsync(ApplicationRole role, Claim claim, CancellationToken cancellationToken = default) {
             cancellationToken.ThrowIfCancellationRequested();
             role.ThrowIfNull(nameof(role));
             claim.ThrowIfNull(nameof(claim));
@@ -123,7 +123,7 @@ namespace AspNetCore.Identity.Dapper.Stores
             }
         }
 
-        public async Task RemoveClaimAsync(ApplicationRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task RemoveClaimAsync(ApplicationRole role, Claim claim, CancellationToken cancellationToken = default) {
             cancellationToken.ThrowIfCancellationRequested();
             role.ThrowIfNull(nameof(role));
             claim.ThrowIfNull(nameof(claim));
@@ -131,5 +131,29 @@ namespace AspNetCore.Identity.Dapper.Stores
             role.Claims.Remove(claim);
         }
         #endregion
+
+        private void ReleaseUnmanagedResources()
+        {
+            // release unmanaged resources here
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            ReleaseUnmanagedResources();
+            if (disposing)
+            {
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~RoleStore()
+        {
+            Dispose(false);
+        }
     }
 }

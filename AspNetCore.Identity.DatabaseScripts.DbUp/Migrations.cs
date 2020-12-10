@@ -1,8 +1,8 @@
-﻿using DbUp;
-using DbUp.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using DbUp;
+using DbUp.Helpers;
 
 namespace AspNetCore.Identity.DatabaseScripts.DbUp
 {
@@ -13,20 +13,15 @@ namespace AspNetCore.Identity.DatabaseScripts.DbUp
 
         public Migrations(DBProviderOptions options)
         {
-
             _schema = options.DbSchema;
             _connectionString = options.ConnectionString;
-
         }
 
         public Migrations(string connectionString, string schema)
         {
-
             _schema = schema;
             _connectionString = connectionString;
-
         }
-
 
         public bool UpgradeDatabase()
         {
@@ -46,13 +41,15 @@ namespace AspNetCore.Identity.DatabaseScripts.DbUp
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine($"Preparing to upgrade {schema}");
-            var variableSubstitutions = new Dictionary<string, string>();
-            variableSubstitutions.Add("schemaname", $"{schema}");
+            var variableSubstitutions = new Dictionary<string, string>
+            {
+                { "schemaname", $"{schema}" }
+            };
 
             Console.ResetColor();
             var upgradeEngine = DeployChanges.To
                 .SqlDatabase(connectionString)
-                .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly(), (s) => s.Contains("EveryRun"))
+                .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly(), s => s.Contains("EveryRun"))
                 .WithVariable("schemaname", $"{schema}")
                 .JournalTo(new NullJournal())
                 .WithTransaction()
@@ -74,26 +71,26 @@ namespace AspNetCore.Identity.DatabaseScripts.DbUp
                 }
             }
 
-
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Success!");
             Console.ResetColor();
             return 0;
         }
 
-
         public static int UpgradeDatabase(string connectionString, string schema, string scriptFolder)
         {
             EnsureSchema(connectionString, schema);
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine($"Preparing to upgrade {schema}");
-            var variableSubstitutions = new Dictionary<string, string>();
-            variableSubstitutions.Add("schemaname", $"{schema}");
+            var variableSubstitutions = new Dictionary<string, string>
+            {
+                { "schemaname", $"{schema}" }
+            };
 
             Console.ResetColor();
             var upgradeEngine = DeployChanges.To
                 .SqlDatabase(connectionString)
-                .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly(), (s) => s.Contains(scriptFolder))
+                .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly(), s => s.Contains(scriptFolder))
                 .WithVariable("schemaname", $"{schema}")
                 .JournalToSqlTable(schema, "SchemaVersions")
                 .WithTransaction()
@@ -115,16 +112,11 @@ namespace AspNetCore.Identity.DatabaseScripts.DbUp
                 }
             }
 
-
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Success!");
             Console.ResetColor();
 
-
             return 0;
-
-
         }
-
     }
 }

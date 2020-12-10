@@ -27,7 +27,7 @@ namespace AspNetCore.Identity.Dapper.Providers
                      await sqlConnection.QueryAsync<UserClaim>(command, new { UserId = user.Id })
                  )
                  .Select(e => new Claim(e.ClaimType, e.ClaimValue))
-                 .ToList(); ;
+                 .ToList();
         }
     }
 }
