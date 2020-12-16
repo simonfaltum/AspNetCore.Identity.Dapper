@@ -98,8 +98,7 @@ Make sure when specifying schema, to not include brackets.
             {
                 options.ConnectionString = "my connectionString";
                 options.DbSchema = "my schema";
-            })
-            .AddDefaultTokenProviders();
+            });
 
             
             /* 
@@ -135,8 +134,7 @@ Another example is provided below with usage of .AddIdentity().
                 {
                     options.ConnectionString = "my connectionString";
                     options.DbSchema = "my schema";
-                })
-                .AddDefaultTokenProviders();
+                });
 
 
             /* 
