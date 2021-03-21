@@ -143,14 +143,14 @@ namespace AspNetCore.Identity.Dapper.Providers
 
                 if (user.Claims?.Count > 0) {
                     var deleteClaimsCommand = "DELETE " +
-                                                 $"FROM [{_databaseConnectionFactory.DbSchema}].UserClaims " +
+                                                 $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUserClaims] " +
                                                  "WHERE UserId = @UserId;";
 
                     await sqlConnection.ExecuteAsync(deleteClaimsCommand, new {
                         UserId = user.Id
                     }, transaction);
 
-                    var insertClaimsCommand = $"INSERT INTO [{_databaseConnectionFactory.DbSchema}].UserClaims (UserId, ClaimType, ClaimValue) " +
+                    var insertClaimsCommand = $"INSERT INTO [{_databaseConnectionFactory.DbSchema}].[AspNetUserClaims] (UserId, ClaimType, ClaimValue) " +
                                                  "VALUES (@UserId, @ClaimType, @ClaimValue);";
 
                     await sqlConnection.ExecuteAsync(insertClaimsCommand, user.Claims.Select(x => new {
@@ -200,14 +200,14 @@ namespace AspNetCore.Identity.Dapper.Providers
 
                 if (user.Tokens?.Count > 0) {
                     var deleteTokensCommand = "DELETE " +
-                                                 $"FROM [{_databaseConnectionFactory.DbSchema}].UserTokens " +
+                                                 $"FROM [{_databaseConnectionFactory.DbSchema}].AspNetUserTokens " +
                                                  "WHERE UserId = @UserId;";
 
                     await sqlConnection.ExecuteAsync(deleteTokensCommand, new {
                         UserId = user.Id
                     }, transaction);
 
-                    var insertTokensCommand = $"INSERT INTO [{_databaseConnectionFactory.DbSchema}].UserTokens (UserId, LoginProvider, Name, Value) " +
+                    var insertTokensCommand = $"INSERT INTO [{_databaseConnectionFactory.DbSchema}].AspNetUserTokens (UserId, LoginProvider, Name, Value) " +
                                                  "VALUES (@UserId, @LoginProvider, @Name, @Value);";
 
                     await sqlConnection.ExecuteAsync(insertTokensCommand, user.Tokens.Select(x => new {
@@ -256,7 +256,7 @@ namespace AspNetCore.Identity.Dapper.Providers
         public async Task<IList<ApplicationUser>> GetUsersForClaimAsync(Claim claim) {
             var command = "SELECT * " +
                                    $"FROM [{_databaseConnectionFactory.DbSchema}].[AspNetUsers] AS u " +
-                                   $"INNER JOIN [{_databaseConnectionFactory.DbSchema}].UserClaims AS uc ON u.Id = uc.UserId " +
+                                   $"INNER JOIN [{_databaseConnectionFactory.DbSchema}].[AspNetUserClaims] AS uc ON u.Id = uc.UserId " +
                                    "WHERE uc.ClaimType = @ClaimType AND uc.ClaimValue = @ClaimValue;";
 
             await using var sqlConnection = await _databaseConnectionFactory.CreateConnectionAsync();
