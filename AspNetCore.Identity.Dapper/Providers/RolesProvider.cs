@@ -55,8 +55,8 @@ namespace AspNetCore.Identity.Dapper.Providers
                 }, transaction);
 
                 if (role.Claims.Count > 0) {
-                    const string deleteClaimsCommand = "DELETE " +
-                                                       "FROM dbo.RoleClaims " +
+                     var deleteClaimsCommand = "DELETE " +
+                                                       $"FROM [{_databaseConnectionFactory.DbSchema}].RoleClaims " +
                                                        "WHERE RoleId = @RoleId;";
 
                     await sqlConnection.ExecuteAsync(deleteClaimsCommand, new {
