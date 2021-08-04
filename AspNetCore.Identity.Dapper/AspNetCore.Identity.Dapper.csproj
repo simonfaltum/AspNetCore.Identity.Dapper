@@ -26,7 +26,7 @@
     <RepositoryUrl>https://github.com/simonfaltum/AspNetCore.Identity.Dapper</RepositoryUrl>
     <Description>This project provides a Dapper implementation of UserStore and RoleStore, to be used with Microsoft.AspNetCore.Identity.</Description>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>5.0.1.0</Version>
+    <Version>5.0.1.1</Version>
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />

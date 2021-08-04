@@ -10,6 +10,7 @@ namespace AspNetCore.Identity.Dapper
 
         public DefaultSqlConnectionFactory(string connectionString, string schema)
         {
+            schema = schema.Replace("[", string.Empty).Replace("]", string.Empty);
             _connectionString = connectionString ?? string.Empty;
             DbSchema = schema;
         }
